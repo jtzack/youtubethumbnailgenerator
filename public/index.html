@@ -454,7 +454,10 @@ function drawThumbnail(ctx, templateId, inputs) {
       if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
       let spY = 30;
       if (showBadge) {
-        const bd = drawBadge(ctx, badgeText, W / 2 - 40, spY, accentColor, hasBg ? textColor : textOnAccent, 22);
+        // Pre-measure badge width to center it
+        ctx.font = `bold 22px 'Inter', sans-serif`;
+        const badgeW = ctx.measureText(badgeText).width + 32;
+        const bd = drawBadge(ctx, badgeText, W / 2 - badgeW / 2, spY, accentColor, hasBg ? textColor : textOnAccent, 22);
         spY += bd.h + 16;
       }
       if (showTitle) {
