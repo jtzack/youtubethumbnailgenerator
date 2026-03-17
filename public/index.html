@@ -96,6 +96,8 @@ const DEFAULT_INPUTS = {
   personScale: 100, personOffsetX: 0, personOffsetY: 0,
   overlayOpacity: 30,
   logoSize: 50,
+  logoOpacity: 100,
+  logoPosition: "bottom-right",
 };
 
 /* ═══════════════════════════════════════════
@@ -272,12 +274,24 @@ function drawBadge(ctx, text, x, y, bgColor, textColor, fontSize) {
   return { w: bw, h: bh };
 }
 
-function drawLogo(ctx, img, x, y, size) {
+function drawLogo(ctx, img, x, y, size, opacity) {
   if (!img) return;
+  const prevAlpha = ctx.globalAlpha;
+  ctx.globalAlpha = (opacity != null ? opacity : 100) / 100;
   const a = img.width / img.height;
   let dw = size, dh = size;
   if (a > 1) dh = size / a; else dw = size * a;
   ctx.drawImage(img, x + (size - dw) / 2, y + (size - dh) / 2, dw, dh);
+  ctx.globalAlpha = prevAlpha;
+}
+
+function getLogoXY(position, W, H, logoSize) {
+  const margin = 30;
+  switch (position) {
+    case "bottom-left":  return [margin, H - logoSize - margin];
+    case "top-right":    return [W - logoSize - margin, margin];
+    default:             return [W - logoSize - margin, H - logoSize - margin];
+  }
 }
 
 
@@ -329,7 +343,7 @@ function drawThumbnail(ctx, templateId, inputs) {
     title, subtitle, badge, bgColor, accentColor, textColor, outlineColor,
     logo, bgImage, personImg, showTitle, showSubtitle, showBadge,
     showLogo, showPerson, fontId, outlineStyle, personScale, personOffsetX, personOffsetY, overlayOpacity,
-    logoSize
+    logoSize, logoOpacity, logoPosition
   } = inputs;
 
   const titleText = (title || "YOUR TITLE HERE").toUpperCase();
@@ -357,7 +371,7 @@ function drawThumbnail(ctx, templateId, inputs) {
         ctx.fillStyle = bgColor; ctx.fillRect(splitX, 0, W - splitX, H);
       }
       if (showPerson && personImg) drawPerson(ctx, personImg, splitX, 0, W - splitX, H, personScale, personOffsetX, personOffsetY);
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       const bsText = hasBg ? textColor : textOnAccent;
       let textY = 60;
       if (showBadge) {
@@ -387,7 +401,7 @@ function drawThumbnail(ctx, templateId, inputs) {
         ctx.fillStyle = grad; ctx.fillRect(0, 0, W, H);
       }
       if (showPerson && personImg) drawPerson(ctx, personImg, W * 0.5, 0, W * 0.5, H, personScale, personOffsetX, personOffsetY);
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       let ty = H * 0.25;
       if (showBadge) {
         const bd = drawBadge(ctx, badgeText, 50, ty, accentColor, hasBg ? textColor : textOnAccent, 20);
@@ -416,7 +430,7 @@ function drawThumbnail(ctx, templateId, inputs) {
         ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(W, 0); ctx.lineTo(W, H * 0.6); ctx.lineTo(0, H); ctx.closePath(); ctx.fill();
       }
       if (showPerson && personImg) drawPerson(ctx, personImg, W * 0.5, 0, W * 0.5, H, personScale, personOffsetX, personOffsetY);
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       const dsText = hasBg ? textColor : textOnAccent;
       let ty = H * 0.35;
       if (showBadge) {
@@ -451,7 +465,7 @@ function drawThumbnail(ctx, templateId, inputs) {
         ctx.fillStyle = glow; ctx.fillRect(0, 0, W, H);
       }
       if (showPerson && personImg) drawPerson(ctx, personImg, W * 0.2, 0, W * 0.6, H, personScale, personOffsetX, personOffsetY);
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       let spY = 30;
       if (showBadge) {
         // Pre-measure badge width to center it
@@ -483,7 +497,7 @@ function drawThumbnail(ctx, templateId, inputs) {
       const leftGrad = ctx.createLinearGradient(0, 0, W * 0.6, 0);
       leftGrad.addColorStop(0, bgColor + "EE"); leftGrad.addColorStop(0.6, bgColor + "88"); leftGrad.addColorStop(1, "transparent");
       ctx.fillStyle = leftGrad; ctx.fillRect(0, 0, W * 0.65, H);
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       let ty = H * 0.2;
       if (showBadge) {
         const bd = drawBadge(ctx, badgeText, 46, ty, accentColor, hasBg ? textColor : textOnAccent, 22);
@@ -508,7 +522,7 @@ function drawThumbnail(ctx, templateId, inputs) {
       if (hasBg) { drawBgImage(ctx, bgImage, overlayOpacity); }
       else { ctx.fillStyle = bgColor; ctx.fillRect(0, 0, W, H); }
       if (showPerson && personImg) drawPerson(ctx, personImg, W * 0.55, H * 0.1, W * 0.45, H * 0.9, personScale, personOffsetX, personOffsetY);
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       let ty = 80;
       if (showBadge) {
         const bd = drawBadge(ctx, badgeText, 50, ty, accentColor, textOnAccent, 20);
@@ -547,7 +561,7 @@ function drawThumbnail(ctx, templateId, inputs) {
       const barY = (H - barH) / 2;
       ctx.fillStyle = accentColor; ctx.fillRect(0, barY, W, barH);
       if (showPerson && personImg) drawPerson(ctx, personImg, W * 0.6, 0, W * 0.4, H, personScale, personOffsetX, personOffsetY);
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       const barTextColor = hasBg ? textColor : textOnAccent;
       if (showTitle && barTitleFit) {
         ctx.font = `${fw} ${barTitleFit.fontSize}px ${ff}`;
@@ -577,7 +591,7 @@ function drawThumbnail(ctx, templateId, inputs) {
       if (showPerson && personImg) {
         drawPerson(ctx, personImg, cx - radius, cy - radius, radius * 2, radius * 2, personScale, personOffsetX, personOffsetY, { type: "circle", cx, cy, r: radius });
       }
-      if (showLogo && logo) drawLogo(ctx, logo, W - logoSize - 30, H - logoSize - 30, logoSize);
+      if (showLogo && logo) { const [lx,ly] = getLogoXY(logoPosition, W, H, logoSize); drawLogo(ctx, logo, lx, ly, logoSize, logoOpacity); }
       let ty = H * 0.18;
       if (showBadge) {
         const bd = drawBadge(ctx, badgeText, W * 0.58, ty, accentColor, hasBg ? textColor : textOnAccent, 20);
@@ -835,6 +849,24 @@ function TemplatesTab() {
             <div style={sidebarLabel}>Logo Size: {inputs.logoSize}px</div>
             <input type="range" min="24" max="120" value={inputs.logoSize} onChange={e => update("logoSize", +e.target.value)}
               style={{ width: "100%", accentColor: inputs.accentColor }} />
+          </div>
+          <div style={{ marginTop: 10 }}>
+            <div style={sidebarLabel}>Logo Opacity: {inputs.logoOpacity}%</div>
+            <input type="range" min="5" max="100" value={inputs.logoOpacity} onChange={e => update("logoOpacity", +e.target.value)}
+              style={{ width: "100%", accentColor: inputs.accentColor }} />
+          </div>
+          <div style={{ marginTop: 10 }}>
+            <div style={sidebarLabel}>Logo Position</div>
+            <div style={{ display: "flex", gap: 6, marginTop: 4 }}>
+              {[["bottom-left","Bottom Left"],["bottom-right","Bottom Right"],["top-right","Top Right"]].map(([val, lbl]) =>
+                <button key={val} onClick={() => update("logoPosition", val)}
+                  style={{ flex: 1, padding: "6px 4px", fontSize: 11, borderRadius: 6, cursor: "pointer", border: "none",
+                    background: inputs.logoPosition === val ? inputs.accentColor : "#333",
+                    color: inputs.logoPosition === val ? "#fff" : "#aaa" }}>
+                  {lbl}
+                </button>
+              )}
+            </div>
           </div>
           </>
         )}
