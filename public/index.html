@@ -341,8 +341,8 @@ function drawThumbnail(ctx, templateId, inputs) {
   const oStyle = outlineStyle || "none";
   const oColor = outlineColor || bgColor;
   const hasBg = !!bgImage;
-  const textOnBg = contrastText(bgColor, textColor, accentColor);
-  const textOnAccent = contrastText(accentColor, textColor, bgColor);
+  const textOnBg = textColor;
+  const textOnAccent = textColor;
 
   ctx.clearRect(0, 0, W, H);
 
