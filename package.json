@@ -1,0 +1,10 @@
+{
+  "name": "youtube-thumbnail-generator",
+  "version": "1.0.0",
+  "description": "YouTube Thumbnail Generator - Create custom thumbnails with templates and styling options",
+  "private": true,
+  "scripts": {
+    "start": "npx serve public",
+    "build": "echo 'No build step required - static site'"
+  }
+}
